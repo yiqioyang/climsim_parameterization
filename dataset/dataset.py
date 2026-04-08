@@ -12,44 +12,25 @@ def transform23d(x, mean, std):
     std = torch.from_numpy(std.values).float()
     return (x - mean) / std
 
-def transform_out(x, std):
-    std = torch.from_numpy(std.values).float()
-    return (x) * std
-
 def transform_q(x, norm_lambda):
     norm_lambda = torch.from_numpy(norm_lambda.values).float()
 
     return 1 - torch.exp(-norm_lambda * x)
 
 
-name_mapping = {
-    'state_t':'ptend_t',
-    'state_q0001':'ptend_q0001', 
-    'state_q0002':'ptend_q0002',
-    'state_q0003':'ptend_q0003',
-    'cam_out_NETSW': 'cam_out_NETSW',
-    'cam_out_FLWDS': 'cam_out_FLWDS',
-    'cam_out_PRECSC': 'cam_out_PRECSC',
-    'cam_out_PRECC': 'cam_out_PRECC',
-    'cam_out_SOLS': 'cam_out_SOLS',
-    'cam_out_SOLL': 'cam_out_SOLL',
-    'cam_out_SOLSD': 'cam_out_SOLSD',
-    'cam_out_SOLLD': 'cam_out_SOLLD'
-}
 
-def load_norm_mean_std():
-    inp_mean = xr.open_dataset("/glade/u/home/qingyuany/ClimSim/preprocessing/normalizations/inputs/input_mean.nc")
-    inp_std = xr.open_dataset("/glade/u/home/qingyuany/ClimSim/preprocessing/normalizations/inputs/input_std.nc")
-    out_mean = xr.open_dataset("/glade/u/home/qingyuany/ClimSim/preprocessing/normalizations/outputs/output_scale.nc")
-    return inp_mean, inp_std, out_mean
 
-def load_lambda():
-    lambda1 = pd.read_csv("/glade/u/home/qingyuany/ClimSim/preprocessing/normalizations/inputs/qn_exp_lambda_large.txt", index_col=False, header=None)
-    lambda2 = pd.read_csv("/glade/u/home/qingyuany/ClimSim/preprocessing/normalizations/inputs/qc_exp_lambda_large.txt", index_col=False, header=None)
-    lambda3 = pd.read_csv("/glade/u/home/qingyuany/ClimSim/preprocessing/normalizations/inputs/qi_exp_lambda_large.txt", index_col=False, header=None)
-    lambdas = pd.concat([lambda1.T, lambda2.T, lambda3.T], axis = 1)
-    lambdas.columns  = ['state_q0001', 'state_q0002', 'state_q0003']
-    return lambdas
+def load_normalization():
+    xmean = xr.open_dataset("/glade/work/qingyuany/Climsim/normalization/xmeans_over_lev.nc")
+    xstd = xr.open_dataset("/glade/work/qingyuany/Climsim/normalization/xstds_over_lev.nc")
+
+    x_q_mean = xr.open_dataset("/glade/work/qingyuany/Climsim/normalization/x_q_means_over_lev.nc")
+
+    ymean = xr.open_dataset("/glade/work/qingyuany/Climsim/normalization/ymeans_over_lev.nc")
+    ystd = xr.open_dataset("/glade/work/qingyuany/Climsim/normalization/ystds_over_lev.nc")
+
+    return xmean, xstd, x_q_mean, ymean, ystd
+
 
 
 
