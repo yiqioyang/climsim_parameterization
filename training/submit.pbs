@@ -1,0 +1,19 @@
+#!/bin/bash
+#PBS -N climsim_train
+#PBS -A P93300313
+#PBS -q casper
+#PBS -l select=1:ncpus=6:ngpus=2:mem=64GB
+#PBS -l walltime=24:00:00
+#PBS -j oe
+#PBS -o climsim_train.$PBS_JOBID.log
+
+
+module load conda
+conda activate ml_env
+
+cd /glade/u/home/qingyuany/repos/climsim_diffusion/training/mlp_training || exit 1
+
+export OMP_NUM_THREADS=1
+export TORCH_DISTRIBUTED_DEBUG=DETAIL
+
+torchrun --standalone --nproc_per_node=2 training.py 1 5 --batch_size 128
