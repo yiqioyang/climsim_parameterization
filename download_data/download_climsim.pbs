@@ -1,0 +1,37 @@
+#!/bin/bash -l
+#PBS -N climsim_dl
+#PBS -A P93300313
+#PBS -l select=1:ncpus=16:mem=32GB
+#PBS -l walltime=24:00:00
+#PBS -q casper
+#PBS -j oe
+
+set -euo pipefail
+
+REPO_DIR="/glade/u/home/qingyuany/repos/climsim_diffusion"
+SCRIPT_PATH="$REPO_DIR/download_data/download_climsim.py"
+CACHE_DIR="/glade/work/qingyuany/Climsim"
+SPLIT="train"
+NUM_PROC="${PBS_NCPUS:-16}"
+
+echo "Job started on $(hostname)"
+echo "Working directory: $REPO_DIR"
+echo "Dataset split: $SPLIT"
+echo "Cache dir: $CACHE_DIR"
+echo "Processes: $NUM_PROC"
+
+cd "$REPO_DIR"
+
+# Load your shell setup so conda is available in batch jobs.
+source "$HOME/.bashrc"
+module load conda
+conda activate ml_env
+
+
+
+python "$SCRIPT_PATH" \
+  --split "$SPLIT" \
+  --cache-dir "$CACHE_DIR" \
+  --num-proc "$NUM_PROC"
+
+echo "Job finished at $(date)"
